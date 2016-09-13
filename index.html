@@ -1,0 +1,765 @@
+<html>
+<head>
+	
+	
+<link rel="apple-touch-icon" sizes="180x180" href="favicons/apple-touch-icon.png"> <link rel="icon" type="image/png" href="favicons/favicon-32x32.png" sizes="32x32"> <link rel="icon" type="image/png" href="favicons/favicon-16x16.png" sizes="16x16"> <meta name="apple-mobile-web-app-title" content="Gmusic Remote"> <meta name="application-name" content="Gmusic Remote"> <meta name="theme-color" content="#ff9900">
+	
+	
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="styles/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+<script src="js/jquery.min.js"></script>
+<script src="styles/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+<script src="js/hammer.js"></script>
+<link rel="stylesheet" href="styles/styleboot.css" />
+<meta name="mobile-web-app-capable" content="yes">
+<script>
+
+
+
+var ipport
+
+/////////////conncet//////////////////////////
+function connect(ipport)
+{
+	ipport = localStorage.getItem("ip")
+	code = localStorage.getItem(ipport)
+	ws = new WebSocket('ws://'+ipport+'');
+	$("#addip").val(localStorage.getItem("ip"));
+	login(code)
+}
+
+
+////////////////////login/////////////////////
+function login(code)
+{
+	connectf()	
+	ws.onopen = function()
+		{
+			ws.send(JSON.stringify({
+			"namespace": "connect",
+			"method": "connect",
+			"arguments": ["pc / webapp", code]
+			}));
+			listen ()
+		}
+	if(ws.readyState === ws.OPEN)
+	{
+		ws.send(JSON.stringify({
+			"namespace": "connect",
+			"method": "connect",
+			"arguments": ["pc / webapp", code]
+			}));
+			listen ()
+	}	
+}  
+function listen ()
+{
+		ws.onmessage = function (evt)
+			{
+			connects()
+			objmess = JSON.parse(evt.data);
+			
+			
+			if(objmess.payload=="CODE_REQUIRED")
+				{
+				if(ws.readyState === ws.OPEN)
+					{
+					code = window.prompt(objmess.payload);
+					if (code != null) 
+						{
+						login(code)
+						}
+					}
+				}
+			if(objmess.channel=="connect")
+				{
+				if(objmess.payload!="CODE_REQUIRED")
+					{
+					code = objmess.payload
+					ipport = localStorage.getItem("ip")
+					localStorage.setItem(ipport, code);
+					login(code)
+					}
+				}
+			switch (objmess.channel){
+				case "playlists":
+					playlist()
+					$("#iconnect").attr("class","glyphicon colmargin iconect glyphicon-music");
+				break;
+				
+				case "track":
+					var mytrack = objmess.payload.albumArt
+					var trackname = objmess.payload.title
+					var trackinfo = objmess.payload.artist +" , "+ objmess.payload.album
+					track(mytrack,trackname,trackinfo)			
+				break;
+				
+				case "playState":
+					var playstate = objmess.payload
+					iconplay(playstate)					
+				break;
+				
+				case "shuffle":
+					var shufflestate = objmess.payload
+				break;
+				
+				case "time":
+					var current=objmess.payload.current
+					var total=objmess.payload.total
+					mytime(current,total)
+				break;
+				
+				case "queue":
+					localStorage.setItem('queue', JSON.stringify(objmess.payload));
+					queuelist()
+				break;
+				
+				case "search-results":
+					localStorage.setItem('search', JSON.stringify(objmess.payload));
+					results()
+				break;
+				case "library":
+					localStorage.setItem('search', JSON.stringify(objmess.payload));
+					library()
+				break;
+				
+			}
+			}
+}
+
+
+///////////////////////playlists////////////////////////
+function playlist()
+{
+	$('#accordion1').empty();
+	var content = null;
+	for(var i = 0; i < objmess.payload.length; i++) 
+		{
+		var playlistid = objmess.payload[i].id
+		localStorage.setItem(playlistid, JSON.stringify(objmess.payload[i]));
+		var playlistid = objmess.payload[i].id
+		var playlistname = objmess.payload[i].name
+		var tracks = objmess.payload[i].tracks
+		var iplay = '<button type="button" id="'+playlistid+'"  class="btn btn-default myplaybtn btn-sm"><span class="glyphicon glyphicon-white glyphicon-small glyphicon-play"></span></button>'
+		var namep = objmess.payload[i].name.substring(10);
+		var name= namep.slice(0, -1);
+		var content='<div class="panel"><div class="panel-heading paneltitre"><table class="titletab"><tr><td data-toggle="collapse" data-parent="#accordion1" href="#collapse'+i+'" class="icoflechebas"><span class="glyphicon glyphicon-white glyphicon-small glyphicon-circle-arrow-down"></span></td><td data-toggle="collapse" data-parent="#accordion" href="#collapse'+i+'" align="left"><span class="titre">'+name+'</span></td><td width="30px;" align="right">'+iplay+'</td></tr></table></div><div id="collapse'+i+'" class="panel-collapse collapse panel-custom " ><div class="panel-body"><ul class="list-group" id="ul'+i+'"></ul></div></div></div>'
+		$( content ).appendTo( "#accordion1" );
+	
+			for(var j = 0; j < objmess.payload[i].tracks.length; j++)
+				{
+				var id = objmess.payload[i].tracks[j].id
+				localStorage.setItem(id, JSON.stringify(objmess.payload[i].tracks[j]));
+				var title = objmess.payload[i].tracks[j].title
+				var album = objmess.payload[i].tracks[j].album
+				var art = objmess.payload[i].tracks[j].albumArt
+				var artist = objmess.payload[i].tracks[j].artist
+				var chans = '<table class="tabline" ><tr id="'+id+'" class="line myplaytracksearch"><td class="mini"><img class="mini" src="'+art+'"><td class="text">'+objmess.payload[i].tracks[j].artist+',  '+objmess.payload[i].tracks[j].title+'</td><td style="width:30px;" ><span class="glyphicon glyphicon-small glyphicon-play-circle"></span></button></td></tr></table>'
+	
+				$( chans ).appendTo( "#ul"+i );
+				}
+		}	
+}
+
+function results()
+{
+	$('#artists').empty();
+	$('#albums').empty();
+	$('#songs').empty();
+	for(var j = 0; j < objmess.payload.albums.length; j++)
+				{
+				var id = objmess.payload.albums[j].id
+				localStorage.setItem(id, JSON.stringify(objmess.payload.albums[j]));
+				var name = objmess.payload.albums[j].name
+				var artist = objmess.payload.albums[j].artist
+				var artv2 = objmess.payload.albums[j].albumArt
+				var art = artv2.slice(0, -3);
+				var album = '<table class="tabline"><tr id="'+id+'" class="line myplaytracksearch"><td class="mini"><img class="mini" src="'+art+'"></td><td class="text">'+artist+',    '+name+'</td><td style="width:30px;" ><button type="button" id="'+id+'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-small glyphicon-play-circle"></span></button></td></tr></table>'
+				
+				$( album ).appendTo( "#albums" );
+				}
+	for(var j = 0; j < objmess.payload.artists.length; j++)
+				{
+				localStorage.setItem('artist'+j, JSON.stringify(objmess.payload.artists[j]));
+				var name = objmess.payload.artists[j].name
+				var id = objmess.payload.artists[j].id
+				var artists = '<table class="tabline"><tr id="artist'+j+'"  class="line myplaytracksearch"><td class="text">'+name+'</td></tr></table>'
+				
+				//$( artists ).appendTo( "#artists" );
+				}
+	for(var j = 0; j < objmess.payload.tracks.length; j++)
+				{
+				localStorage.setItem('song'+j, JSON.stringify(objmess.payload.tracks[j]));
+				var name = objmess.payload.tracks[j].title
+				var artist = objmess.payload.tracks[j].artist
+				var id = objmess.payload.tracks[j].id 
+				var art = objmess.payload.tracks[j].albumArt
+				var songs = '<table class="tabline"><tr id="song'+j+'"  class="line myplaytracksearch"><td class="mini"><img class="mini" src="'+art+'"></td><td class="text" align="left">'+artist+',    '+name+'</td></td><td style="width:30px;" ><span class="glyphicon glyphicon-small glyphicon-play-circle"></span></button></td></tr></table>'
+				
+				$( songs ).appendTo( "#songs" );
+				}
+
+
+
+}
+
+
+
+function library()
+{
+	$('#libalbums').empty();
+	$('#libsongs').empty();
+	for(var j = 0; j < objmess.payload.albums.length; j++)
+				{
+				var id = objmess.payload.albums[j].id
+				localStorage.setItem(id, JSON.stringify(objmess.payload.albums[j]));
+				var name = objmess.payload.albums[j].name
+				var artist = objmess.payload.albums[j].artist
+				var art = objmess.payload.albums[j].albumArt
+				var album = '<table class="tabline"><tr id="'+id+'" class="line myplaytracksearch"><td class="mini"><img class="mini" src="'+art+'"></td><td class="text">'+artist+',    '+name+'</td><td style="width:30px;" ><button type="button" id="'+id+'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-small glyphicon-play-circle"></span></button></td></tr></table>'
+				
+				$( album ).appendTo( "#libalbums" );
+				}
+	for(var j = 0; j < objmess.payload.artists.length; j++)
+				{
+				localStorage.setItem('artist'+j, JSON.stringify(objmess.payload.artists[j]));
+				var name = objmess.payload.artists[j].name
+				var id = objmess.payload.artists[j].id
+				var artists = '<table class="tabline"><tr id="artist'+j+'"  class="line myplaytracksearch"><td class="text">'+name+'</td></tr></table>'
+				
+				//$( artists ).appendTo( "#artists" );
+				}
+	for(var j = 0; j < objmess.payload.tracks.length; j++)
+				{
+				localStorage.setItem('song'+j, JSON.stringify(objmess.payload.tracks[j]));
+				var name = objmess.payload.tracks[j].title
+				var artist = objmess.payload.tracks[j].artist
+				var id = objmess.payload.tracks[j].id 
+				var art = objmess.payload.tracks[j].albumArt
+				var songs = '<table class="tabline"><tr id="song'+j+'"  class="line myplaytracksearch"><td class="mini"><img class="mini" src="'+art+'"></td><td class="text" align="left">'+artist+',    '+name+'</td></td><td style="width:30px;" ><span class="glyphicon glyphicon-small glyphicon-play-circle"></span></button></td></tr></table>'
+				
+				$( songs ).appendTo( "#libsongs" );
+				}
+
+
+
+}
+
+
+function queuelist()
+{
+	$('#queueul').empty();
+	for(var j = 0; j < objmess.payload.length; j++)
+				{
+				var id = objmess.payload[j].id
+				localStorage.setItem(id, JSON.stringify(objmess.payload[j]));
+				var title = objmess.payload[j].title
+				var album = objmess.payload[j].album
+				var art = objmess.payload[j].albumArt
+				var artist = objmess.payload[j].artist
+				var chans = '<table class="tabline"><tr id="'+id+'" class="line myplaytracksearch"><td class="mini"><img class="mini" src="'+art+'"></td><td class="text">'+artist+',  '+title+'</td><td style="width:30px;" ><span class="glyphicon glyphicon-small glyphicon-play-circle"></span></button></td></tr></table>'
+	 
+				$( chans ).appendTo( "#queueul" );
+				}
+}
+
+
+
+function getObjects(obj, key, val) {
+    var objects = [];
+    for (var i in obj) {
+        if (!obj.hasOwnProperty(i)) continue;
+        if (typeof obj[i] == 'object') {
+            objects = objects.concat(getObjects(obj[i], key, val));
+        } else if (i == key && obj[key] == val) {
+            objects.push(obj);
+        }
+    }
+    return objects;
+}
+
+
+function track(mytrack,trackname,trackinfo){
+		$("#imgplayer").attr("src",mytrack);
+		$("#tracklabel").html(trackname);
+		$("#albartlabel").html(trackinfo);
+}
+function mytime(current,total)
+{
+		var mywidth=current/total*100
+		$('#superbar').css('width', mywidth+'%').attr('aria-valuenow', current)
+		$('#superbar').attr('aria-valuemax', total)
+}
+function play(list)
+{
+		clear()
+		var obj = JSON.parse(localStorage.getItem(list));
+ 		ws.send(JSON.stringify({
+		"namespace": "playlists",
+		"method": "play",
+		"arguments" : [obj]
+		}));
+		setTimeout(function(){
+			playpause()
+		}, 2000);
+}
+function playt(mysong)
+{
+		var obj1 = JSON.parse(localStorage.getItem("queue"));
+		var supobj= getObjects(obj1, 'id', mysong) 
+		toplay = supobj[0]
+		setTimeout(function(){
+			searchplay(toplay)
+		}, 2000);
+}
+
+function playresult(result){
+		var obj1 = JSON.parse(localStorage.getItem(result));
+		console.log(obj1)
+		setTimeout(function(){
+			searchplay(obj1)
+		}, 2000);
+
+}
+
+function playpause()
+{
+ 		ws.send(JSON.stringify({
+				"namespace": "playback",
+				"method": "playPause"
+				}));
+}
+function forward()
+{
+ 		ws.send(JSON.stringify({
+				"namespace": "playback",
+				"method": "forward"
+				}));				
+}
+function backward()
+{
+ 		ws.send(JSON.stringify({
+				"namespace": "playback",
+				"method": "rewind"
+				}));
+}
+function clear()
+{
+ 		ws.send(JSON.stringify({
+				"namespace": "queue",
+				"method": "clear"
+				}));
+}
+function playTrack(track)
+{
+ 		ws.send(JSON.stringify({
+				"namespace": "queue",
+				"method": "playTrack",
+				"arguments": track
+				}));
+}
+
+
+function toggleShuffle()
+{
+		ws.send(JSON.stringify({
+				"namespace": "playback",
+				"method": "toggleShuffle"
+				}));
+}
+function shufflemode()
+{
+		ws.send(JSON.stringify({
+				"namespace": "playback",
+				"method": "setShuffle",
+				"arguments" :"ALL_SHUFFLE"
+				}));
+}
+
+
+function allplaylists()
+{
+ 		ws.send(JSON.stringify({
+				"namespace": "playlists",
+				"method": "getAll"
+				}));
+}
+
+function search(mysearch)
+{
+ 		ws.send(JSON.stringify({
+				"namespace": "search",
+				"method": "performSearch",
+				"arguments" : [mysearch]
+				}));
+}
+function searchplay(track)
+{
+ 		ws.send(JSON.stringify({
+				"namespace": "search",
+				"method": "playResult",
+				"arguments" : [track]
+				}));
+}
+
+function iconplay(state)
+{
+	if(state==false)
+	{
+	$("#ppicon").attr("class","glyphicon glyphicon-large colmargin glyphicon-play");
+	}
+	if (state==true)
+	{
+	$("#ppicon").attr("class","glyphicon glyphicon-large colmargin glyphicon-pause")
+	}
+}
+function connects()
+{
+	$("#checkico").attr("class","glyphicon glyphicon-large glyphicon-ok glyphicon-green")
+}
+function connectf()
+{
+	$("#checkico").attr("class","glyphicon glyphicon-large glyphicon-ok glyphicon-red")
+}
+
+
+
+function playback()
+{
+ 		ws.send(JSON.stringify({
+				"namespace": "playback",
+				"method": "setCurrentTime",
+				"arguments": [100000]
+				}));
+}
+function currenttrack()
+{
+ 		ws.send(JSON.stringify({
+				"namespace": "playback",
+				"method": "isPlaying"
+				}));
+}
+
+
+function resizeimg()
+{
+  var	hcont = $("#container").height();
+  var screenImage = $("#imgplayer");
+  var theImage = new Image(); 
+  theImage.src = screenImage.attr("src"); 
+  var imageWidth = theImage.width; 
+  var imageHeight = theImage.height;
+  if (hcont < 700 )
+  		{
+  			
+  		}
+  		
+  
+}
+
+$( document ).ready(function() {
+	connect()
+	var conheight= $('#container').height();
+	var resized = conheight - 200;
+	var resuresized = conheight - 153;
+	$('body').on('click','#checkico', function(){
+	ip = $('#addip').val();
+	ws.close()
+	$("input").blur();
+	localStorage.setItem("ip", ip)
+	connect(ip)
+	});
+	
+	$('body').on('click','.myplaybtn', function(){
+	var id = $(this).attr('id');
+	play(id)
+	});
+	
+	$('body').on('click','#searchico', function(){
+	$("input").blur();
+	var mysearch = $('#searchin').val();
+	search(mysearch)
+	setTimeout(function(){
+				$("#results").css("height", resuresized);
+				var libsize = resuresized - 50
+				$(".sublibrary").css("height", libsize );
+				var navheight= $('#nav').height();
+				$("#results").css("top", navheight);
+				$("#results").animate({right: '0px'});
+			}, 500);
+	$("#searchin").val("");
+	});
+	
+	$('#searchin').on('keypress', function (e) {
+         if(e.which === 13){
+			$("input").blur();
+			var mysearch = $('#searchin').val();
+			search(mysearch)
+			$("#searchin").val("");
+			setTimeout(function(){
+				$("#results").css("height", resuresized);
+				var navheight= $('#nav').height();
+				var libsize = resuresized - 50
+				$(".sublibrary").css("height", libsize );
+				$("#results").css("top", navheight);
+				$("#results").animate({right: '0px'});
+			}, 500);
+			return false;
+         }
+   });
+   
+   $('#addip').on('keypress', function (e) {
+         if(e.which === 13){
+			$("input").blur();
+			ip = $('#addip').val();
+			ws.close()
+			localStorage.setItem("ip", ip)
+			connect(ip)
+         }
+   });
+	
+	
+	$('tr').on('click','.myplaytrackbtn', function(){
+	var mysong = $(this).attr('id');
+	playt(mysong)
+	});
+	$('body').on('click','.myplaytracksearch', function(){
+	var recup = $(this).attr('id');
+	console.log(recup)
+	playresult(recup)
+	});
+	
+	
+	$('body').on('click','#btn1', function(){
+    playpause()
+	});
+	
+	$('body').on('click','.glyphicon-fast-forward', function(){
+    forward()
+	});
+	
+	$('body').on('click','.glyphicon-fast-backward', function(){
+    backward()
+	});
+	
+	$('body').on('click','.glyphicon-play', function(){
+    playpause()
+	});
+	$('body').on('click','.glyphicon-pause', function(){
+    playpause()
+	});
+	
+	$('body').on('click','.glyphicon-random', function(){
+	toggleShuffle()
+	});
+	$('body').on('click','.glyphicon-volume-off', function(){
+	currenttrack()
+	});
+	$('body').on('click','#icoplaylists', function(){
+	$("#menu").animate({left: '0px'});
+	});
+	$('body').on('click','#dispresults', function(){
+		$("#library").css("height", resuresized);
+		var libsize = resuresized - 50
+		$(".sublibrary").css("height", libsize );
+		var navheight= $('#nav').height();
+		$("#library").css("top", navheight);
+		$("#library").animate({right: '0px'});
+	});
+	
+/////////////hammer/////////////////////////////////	
+	
+
+	var menu = document.getElementById('menu');
+	var menuHammer = new Hammer(menu);
+	menuHammer.on("swipeleft", function(ev) {
+	    $("#menu").animate({left: '-100%'},200);
+	});
+	
+	var navheight= $('#nav').height();
+	var container = document.getElementById('container');
+	var containerHammer = new Hammer(container);
+	containerHammer.on("swiperight", function(ev) {
+		$("#menu").css("top", navheight);
+	    $("#menu").css("left", '0px');
+	    $("#accordion1").css("height", resized);
+	});
+	
+	var queue = document.getElementById('queue');
+	var menuHammer = new Hammer(queue);
+	menuHammer.on("swiperight", function(ev) {
+	    $("#queue").css("right", '-100%');
+	    
+	});
+	
+	var results = document.getElementById('results');
+	var menuHammer = new Hammer(results);
+	menuHammer.on("swiperight", function(ev) {
+	    $("#results").css("right", '-100%');
+	    
+	});
+	
+	var library = document.getElementById('library');
+	var menuHammer = new Hammer(library);
+	menuHammer.on("swiperight", function(ev) {
+	    $("#library").css("right", '-100%');
+	    
+	});
+	
+	
+	var container = document.getElementById('container');
+	var containerHammer = new Hammer(container);
+	containerHammer.on("swipeleft", function(ev) {
+		$("#queue").css("top", navheight);
+		$("#queue").css("right", '0');
+		$("#accordion2").css("height", resized);
+		
+	});
+	
+	
+	
+	
+});
+
+
+</script>
+
+
+</head>
+<body>
+
+<!-- /////////////////////////////navbar//////////////////////// -->
+	<nav role="navigation" class="navbar navbar-inverse overlaymenu">
+
+    <div class="navbar-header">
+        <button type="button" data-target="#navbarCollapse" data-toggle="collapse" class="navbar-toggle">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+	
+
+                <input type="text" placeholder="Search" id="searchin" class="form-control">
+				<button type="button" id="searchico" class="btn btn-info btn-sm"><span class="glyphicon  glyphicon-search glyphicon-small"></span></button>
+				<button type="button" id="dispresults" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-th-list glyphicon-small"></span></button>
+        
+    </div>
+
+    <div id="navbarCollapse" class="collapse navbar-collapse">
+        <ul class="nav navbar-nav">
+           
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+            <li class="dropdown">
+                <a data-toggle="dropdown" class="dropdown-toggle" href="#">Settings <b class="caret"></b></a>
+                <ul role="menu" class="dropdown-menu settings">
+					<li>
+							<li><input value="aa" placeholder="192.168.10.1:5672" type="text" class="form-control" id="addip"></li>
+                    		<li><span id="checkico" class="glyphicon glyphicon-ok glyphicon-xsmall"></span></button></li>
+					</li>
+				</ul>
+            </li>
+        </ul>
+    </div>
+	
+	
+	
+<!-- ///////////playlist////////// -->
+	<div id="menu" >
+		<h1 class="titre">Playlists</h1>
+		<div class="panel-group" id="accordion1"> 
+		</div>
+	</div>
+
+<!-- ///////queue//////////////// -->	
+	<div id="queue" >
+		<h1 class="titre">Queue</h1>
+		<div class="panel-group" id="accordion2"> 
+		<ul class="uscust" id="queueul">
+		</ul>
+		</div>
+	</div>
+	
+
+<!-- ///////search//////////////// -->	
+	<div id="results" >
+		<h1 class="titre">Results</h1>
+		<div class="sublibrary"> 
+			<div>
+				<h1 class="titre">Albums</h1>
+				<ul id="albums" class="result">
+				</ul>
+			</div>
+			<div>
+				<h1 class="titre">Songs</h1>
+				<ul id="songs" class="result">
+				</ul>
+			</div>
+		</div>
+	</div>
+<!-- //////library/////////////////////	 -->
+	<div id="library" >
+		<h1 class="titre">My library</h1>
+		<div class="sublibrary">
+			<div>
+				<h1 class="titre">Albums</h1>
+				<ul id="libalbums" class="result">
+				</ul>
+			</div>
+			<div>
+				<h1 class="titre">Songs</h1>
+				<ul id="libsongs" class="result">
+				</ul>
+			</div>
+		</div>
+	</div>
+	
+	
+</nav>
+
+
+
+<!-- ///////////////////////////////player/////////////////////////////////	 -->
+	<div class="container-fluid" id="container">
+		<img id="imgplayer" class="img-rounded img-responsive" alt="Go to settings Check IP:5672" >
+
+				<div class="square">
+					<div id="albartlabel" class="alert alert-info translucid" role="alert">
+					</div>
+					<div id="tracklabel" class="alert alert-info translucid" role="alert">
+					</div>
+					<div class="progress">
+						<div class="progress-bar progress-bar-warning" id="superbar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="0" style="width: 0%">
+						</div>
+					</div>	
+				</div>
+		 
+	</div>
+	
+	<div class="text-center list-button overlayplay">
+				<div class="list-group  list-group-horizontal">
+				<button type="button" class="btn btn-info btn-sm">
+					<span class="glyphicon colmargin glyphicon-large glyphicon-random"></span>
+				</button>
+				<button type="button" class="btn btn-info btn-sm">
+					<span class="glyphicon colmargin glyphicon-large glyphicon-fast-backward"></span>
+				</button>
+				<button type="button"  class="btn btn-info btn-sm">
+					<span id="ppicon" class="glyphicon glyphicon-large colmargin glyphicon-play"></span>
+				</button>
+				<button type="button"  class="btn btn-info btn-sm">
+					<span class="glyphicon colmargin glyphicon-large glyphicon-fast-forward"></span>
+				</button>
+				<button type="button" class="btn btn-info btn-sm">
+					<span class="glyphicon colmargin glyphicon-large glyphicon-volume-off"></span>
+				</button>					
+				</div>				
+	
+	
+	</div>
+
+
+
+</body>
+</html>
