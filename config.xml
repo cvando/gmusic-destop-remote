@@ -8,7 +8,7 @@
 <!-- versionCode is optional and Android only -->
 
   <name>Gmusic Remote</name>
-
+  <icon src="favicons/android-chrome.png" />
   <description>
       Control Google play music desktop remotly
       https://www.googleplaymusicdesktopplayer.com/
