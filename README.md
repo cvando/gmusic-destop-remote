@@ -4,7 +4,7 @@
   <img src="screenshots/search.jpg" height="350"/>
   
   
-  <h1>Description<H1>
+  <h1>Description</H1>
   
 <p>Google Play Music Desktop Player is needed to receive commands from this Remote Control App. <br>
 The Remote Control apps allow you to remotely control Google Play Music Desktop Player from your android tablet and smartphone. You can download the latest version on the playstore </p>
