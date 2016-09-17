@@ -27,9 +27,9 @@ dsqddsdqsdsq
   <img src="screenshots/windows.jpg" height="350"/>
   </li>
   <br>
-  <li>On the application click on settings and type the ip:port of the Google Play Music Desktop Player and click on the red check icon or press enter <br>
-  example: 192.168.10.14:5672    The port is always 5672 don't forget it<br>
-  <img src="screenshots/iptab.jpg" height="350"/>
+  <li>On the application click on settings and type the ip of the Google Play Music Desktop Player and click on the red check icon or press enter <br>
+ 
+  <img src="screenshots/ip.jpg" height="350"/>
   </li>
     <br>
   <li>A code appears on  Google Play Music Desktop Player<br>
