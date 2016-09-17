@@ -3,8 +3,6 @@
 	
 	
 <link rel="apple-touch-icon" sizes="180x180" href="favicons/apple-touch-icon.png"> <link rel="icon" type="image/png" href="favicons/favicon-32x32.png" sizes="32x32"> <link rel="icon" type="image/png" href="favicons/favicon-16x16.png" sizes="16x16"> <meta name="apple-mobile-web-app-title" content="Gmusic Remote"> <meta name="application-name" content="Gmusic Remote"> <meta name="theme-color" content="#ff9900">
-	
-<meta http-equiv="Content-Security-Policy" content="img-src 'self' data:">	
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="styles/bootstrap-3.3.7-dist/css/bootstrap.min.css">
 <script src="js/jquery.min.js"></script>
@@ -21,8 +19,9 @@ var ipport
 /////////////conncet//////////////////////////
 function connect(ipport)
 {
-	ipport = localStorage.getItem("ip")
-	code = localStorage.getItem(ipport)
+	ip = localStorage.getItem("ip")
+	code = localStorage.getItem(ip)
+	ipport = ip+":5672"
 	ws = new WebSocket('ws://'+ipport+'');
 	$("#addip").val(localStorage.getItem("ip"));
 	login(code)
@@ -59,7 +58,6 @@ function listen ()
 			connects()
 			objmess = JSON.parse(evt.data);
 			
-			
 			if(objmess.payload=="CODE_REQUIRED")
 				{
 				if(ws.readyState === ws.OPEN)
@@ -81,6 +79,9 @@ function listen ()
 					login(code)
 					}
 				}
+			
+			
+			
 			switch (objmess.channel){
 				case "playlists":
 					playlist()
@@ -100,7 +101,14 @@ function listen ()
 				break;
 				
 				case "shuffle":
-					var shufflestate = objmess.payload
+					if(objmess.payload!="NO_SHUFFLE")
+					{
+					$(".glyphicon-random").attr("class","glyphicon colmargin glyphicon-large glyphicon-random enabled");
+					}
+					else
+					{
+					$(".glyphicon-random").attr("class","glyphicon colmargin glyphicon-large glyphicon-random");
+					}
 				break;
 				
 				case "time":
@@ -119,7 +127,7 @@ function listen ()
 					results()
 				break;
 				case "library":
-					localStorage.setItem('search', JSON.stringify(objmess.payload));
+					localStorage.setItem('lirary', JSON.stringify(objmess.payload));
 					library()
 				break;
 				
@@ -180,21 +188,21 @@ function results()
 				}
 	for(var j = 0; j < objmess.payload.artists.length; j++)
 				{
-				localStorage.setItem('artist'+j, JSON.stringify(objmess.payload.artists[j]));
-				var name = objmess.payload.artists[j].name
 				var id = objmess.payload.artists[j].id
-				var artists = '<table class="tabline"><tr id="artist'+j+'"  class="line myplaytracksearch"><td class="text">'+name+'</td></tr></table>'
+				localStorage.setItem(id, JSON.stringify(objmess.payload.artists[j]));
+				var name = objmess.payload.artists[j].name
+				var artists = '<table class="tabline"><tr id="'+id+'"  class="line myplaytracksearch"><td class="text">'+name+'</td></tr></table>'
 				
 				//$( artists ).appendTo( "#artists" );
 				}
 	for(var j = 0; j < objmess.payload.tracks.length; j++)
 				{
-				localStorage.setItem('song'+j, JSON.stringify(objmess.payload.tracks[j]));
+				var id = objmess.payload.tracks[j].id
+				localStorage.setItem(id, JSON.stringify(objmess.payload.tracks[j]));
 				var name = objmess.payload.tracks[j].title
-				var artist = objmess.payload.tracks[j].artist
-				var id = objmess.payload.tracks[j].id 
+				var artist = objmess.payload.tracks[j].artist 
 				var art = objmess.payload.tracks[j].albumArt
-				var songs = '<table class="tabline"><tr id="song'+j+'"  class="line myplaytracksearch"><td class="mini"><img class="mini" src="'+art+'"></td><td class="text" align="left">'+artist+',    '+name+'</td></td><td style="width:30px;" ><span class="glyphicon glyphicon-small glyphicon-play-circle"></span></button></td></tr></table>'
+				var songs = '<table class="tabline"><tr id="'+id+'"  class="line myplaytracksearch"><td class="mini"><img class="mini" src="'+art+'"></td><td class="text" align="left">'+artist+',    '+name+'</td></td><td style="width:30px;" ><span class="glyphicon glyphicon-small glyphicon-play-circle"></span></button></td></tr></table>'
 				
 				$( songs ).appendTo( "#songs" );
 				}
@@ -216,7 +224,7 @@ function library()
 				var name = objmess.payload.albums[j].name
 				var artist = objmess.payload.albums[j].artist
 				var art = objmess.payload.albums[j].albumArt
-				var album = '<table class="tabline"><tr id="'+id+'" class="line myplaytracksearch"><td class="mini"><img class="mini" src="'+art+'"></td><td class="text">'+artist+',    '+name+'</td><td style="width:30px;" ><button type="button" id="'+id+'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-small glyphicon-play-circle"></span></button></td></tr></table>'
+				var album = '<table class="tabline"><tr id="'+id+'" class="line myplaytracksearch"><td class="mini"><img class="mini" src="'+art+'"></td><td class="text">'+artist+',    '+name+'</td><td style="width:30px;" ><span class="glyphicon glyphicon-small glyphicon-play-circle"></span></td></tr></table>'
 				
 				$( album ).appendTo( "#libalbums" );
 				}
@@ -236,7 +244,7 @@ function library()
 				var artist = objmess.payload.tracks[j].artist
 				var id = objmess.payload.tracks[j].id 
 				var art = objmess.payload.tracks[j].albumArt
-				var songs = '<table class="tabline"><tr id="song'+j+'"  class="line myplaytracksearch"><td class="mini"><img class="mini" src="'+art+'"></td><td class="text" align="left">'+artist+',    '+name+'</td></td><td style="width:30px;" ><span class="glyphicon glyphicon-small glyphicon-play-circle"></span></button></td></tr></table>'
+				var songs = '<table class="tabline"><tr id="song'+j+'"  class="line myplaytracksearch"><td class="mini"><img class="mini" src="'+art+'"></td><td class="text" align="left">'+artist+',    '+name+'</td></td><td style="width:30px;" ><span class="glyphicon glyphicon-small glyphicon-play-circle"></span></td></tr></table>'
 				
 				$( songs ).appendTo( "#libsongs" );
 				}
@@ -249,15 +257,17 @@ function library()
 function queuelist()
 {
 	$('#queueul').empty();
-	for(var j = 0; j < objmess.payload.length; j++)
+	var obj = JSON.parse(localStorage.getItem("queue"));
+	console.log(obj.length)
+	for(var j = 0; j < obj.length; j++)
 				{
-				var id = objmess.payload[j].id
-				localStorage.setItem(id, JSON.stringify(objmess.payload[j]));
-				var title = objmess.payload[j].title
-				var album = objmess.payload[j].album
-				var art = objmess.payload[j].albumArt
-				var artist = objmess.payload[j].artist
-				var chans = '<table class="tabline"><tr id="'+id+'" class="line myplaytracksearch"><td class="mini"><img class="mini" src="'+art+'"></td><td class="text">'+artist+',  '+title+'</td><td style="width:30px;" ><span class="glyphicon glyphicon-small glyphicon-play-circle"></span></button></td></tr></table>'
+				var id = obj[j].id
+				localStorage.setItem("song"+j, JSON.stringify(objmess.payload[j]));
+				var title = obj[j].title
+				var album = obj[j].album
+				var art = obj[j].albumArt
+				var artist = obj[j].artist
+				var chans = '<table class="tabline"><tr id="song'+j+'" class="line myplaytracksearch"><td class="mini"><img class="mini" src="'+art+'"></td><td class="text">'+artist+',  '+title+'</td><td style="width:30px;" ><span class="glyphicon glyphicon-small glyphicon-play-circle"></span></td></tr></table>'
 	 
 				$( chans ).appendTo( "#queueul" );
 				}
@@ -318,6 +328,15 @@ function playresult(result){
 		console.log(obj1)
 		setTimeout(function(){
 			searchplay(obj1)
+		}, 2000);
+
+}
+
+function myplay2(result){
+		var obj = JSON.parse(localStorage.getItem("queue"));
+		console.log(obj[result])
+		setTimeout(function(){
+			playTrack(obj[result])
 		}, 2000);
 
 }
@@ -415,11 +434,11 @@ function iconplay(state)
 }
 function connects()
 {
-	$("#checkico").attr("class","glyphicon glyphicon-large glyphicon-ok glyphicon-green")
+	$("#checkico").attr("class","glyphicon glyphicon-xsmall glyphicon-ok glyphicon-green")
 }
 function connectf()
 {
-	$("#checkico").attr("class","glyphicon glyphicon-large glyphicon-ok glyphicon-red")
+	$("#checkico").attr("class","glyphicon glyphicon-xsmall glyphicon-ok glyphicon-red")
 }
 
 
@@ -443,7 +462,7 @@ function currenttrack()
 
 function resizeimg()
 {
-  var	hcont = $("#container").height();
+  var hcont = $("#container").height();
   var screenImage = $("#imgplayer");
   var theImage = new Image(); 
   theImage.src = screenImage.attr("src"); 
@@ -462,10 +481,16 @@ $( document ).ready(function() {
 	var conheight= $('#container').height();
 	var resized = conheight - 200;
 	var resuresized = conheight - 153;
+	$( "#results" ).hide();
+	$( "#menu" ).hide();
+	$( "#library" ).hide();
+	$( "#queue" ).hide();
+	
 	$('body').on('click','#checkico', function(){
 	ip = $('#addip').val();
 	ws.close()
 	$("input").blur();
+	$( "#navbarCollapse" ).toggleClass( "collapse" )
 	localStorage.setItem("ip", ip)
 	connect(ip)
 	});
@@ -479,14 +504,14 @@ $( document ).ready(function() {
 	$("input").blur();
 	var mysearch = $('#searchin').val();
 	search(mysearch)
-	setTimeout(function(){
+				$( "#results" ).show();
+				$("#imgplayer").css("-webkit-filter", "brightness(50%)");
 				$("#results").css("height", resuresized);
 				var libsize = resuresized - 50
 				$(".sublibrary").css("height", libsize );
 				var navheight= $('#nav').height();
 				$("#results").css("top", navheight);
-				$("#results").animate({right: '0px'});
-			}, 500);
+				$("#results").css("animation",  "rleft 1s forwards");
 	$("#searchin").val("");
 	});
 	
@@ -496,14 +521,14 @@ $( document ).ready(function() {
 			var mysearch = $('#searchin').val();
 			search(mysearch)
 			$("#searchin").val("");
-			setTimeout(function(){
+				$("#imgplayer").css("-webkit-filter", "brightness(50%)");
+				$( "#results" ).show();
 				$("#results").css("height", resuresized);
 				var navheight= $('#nav').height();
 				var libsize = resuresized - 50
 				$(".sublibrary").css("height", libsize );
 				$("#results").css("top", navheight);
-				$("#results").animate({right: '0px'});
-			}, 500);
+				$("#results").css("animation",  "rleft 1s forwards");
 			return false;
          }
    });
@@ -512,6 +537,7 @@ $( document ).ready(function() {
          if(e.which === 13){
 			$("input").blur();
 			ip = $('#addip').val();
+			$( "#navbarCollapse" ).toggleClass( "collapse" )
 			ws.close()
 			localStorage.setItem("ip", ip)
 			connect(ip)
@@ -525,8 +551,8 @@ $( document ).ready(function() {
 	});
 	$('body').on('click','.myplaytracksearch', function(){
 	var recup = $(this).attr('id');
-	console.log(recup)
 	playresult(recup)
+	//myplay2(recup)
 	});
 	
 	
@@ -556,15 +582,19 @@ $( document ).ready(function() {
 	currenttrack()
 	});
 	$('body').on('click','#icoplaylists', function(){
+	$("#menu").css("display", block);
 	$("#menu").animate({left: '0px'});
 	});
 	$('body').on('click','#dispresults', function(){
+		$( "#library" ).show();
+		$("#imgplayer").css("-webkit-filter", "brightness(50%)");
 		$("#library").css("height", resuresized);
 		var libsize = resuresized - 50
 		$(".sublibrary").css("height", libsize );
 		var navheight= $('#nav').height();
 		$("#library").css("top", navheight);
-		$("#library").animate({right: '0px'});
+		$("#library").css("animation",  "rleft 1s forwards");
+
 	});
 	
 /////////////hammer/////////////////////////////////	
@@ -573,36 +603,45 @@ $( document ).ready(function() {
 	var menu = document.getElementById('menu');
 	var menuHammer = new Hammer(menu);
 	menuHammer.on("swipeleft", function(ev) {
-	    $("#menu").animate({left: '-100%'},200);
+		$("#imgplayer").css("-webkit-filter", "brightness(100%)");
+	    $("#menu").css("animation",  "left 1s forwards");
+		setTimeout(function(){$( "#menu" ).hide();}, 1000);
 	});
 	
 	var navheight= $('#nav').height();
 	var container = document.getElementById('container');
 	var containerHammer = new Hammer(container);
 	containerHammer.on("swiperight", function(ev) {
+		$( "#menu" ).show();
+		$("#imgplayer").css("-webkit-filter", "brightness(50%)");
+		$("#menu").css("animation",  "right 1s forwards");
 		$("#menu").css("top", navheight);
-	    $("#menu").css("left", '0px');
 	    $("#accordion1").css("height", resized);
 	});
 	
 	var queue = document.getElementById('queue');
 	var menuHammer = new Hammer(queue);
 	menuHammer.on("swiperight", function(ev) {
-	    $("#queue").css("right", '-100%');
-	    
+		$("#imgplayer").css("-webkit-filter", "brightness(100%)");
+		$("#queue").css("animation",  "rright 1s forwards"); 
+		setTimeout(function(){$( "#queue" ).hide();}, 1000);
 	});
 	
 	var results = document.getElementById('results');
 	var menuHammer = new Hammer(results);
 	menuHammer.on("swiperight", function(ev) {
-	    $("#results").css("right", '-100%');
+		$("#imgplayer").css("-webkit-filter", "brightness(100%)");
+	    $("#results").css("animation",  "rright 1s forwards"); 
+		setTimeout(function(){$( "#results" ).hide();}, 1000);
 	    
 	});
 	
 	var library = document.getElementById('library');
 	var menuHammer = new Hammer(library);
 	menuHammer.on("swiperight", function(ev) {
-	    $("#library").css("right", '-100%');
+		$("#imgplayer").css("-webkit-filter", "brightness(100%)");
+	   $("#library").css("animation",  "rright 1s forwards"); 
+		setTimeout(function(){$( "#library" ).hide();}, 1000);
 	    
 	});
 	
@@ -610,10 +649,11 @@ $( document ).ready(function() {
 	var container = document.getElementById('container');
 	var containerHammer = new Hammer(container);
 	containerHammer.on("swipeleft", function(ev) {
+		$("#imgplayer").css("-webkit-filter", "brightness(50%)");
+		$( "#queue" ).show();
 		$("#queue").css("top", navheight);
-		$("#queue").css("right", '0');
+		$("#queue").css("animation",  "rleft 1s forwards");   
 		$("#accordion2").css("height", resized);
-		
 	});
 	
 	
@@ -634,9 +674,10 @@ $( document ).ready(function() {
     <div class="navbar-header">
         <button type="button" data-target="#navbarCollapse" data-toggle="collapse" class="navbar-toggle">
             <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
+            <span class="icon-bar "></span>
+            <span class="icon-bar "></span>
+            <span class="icon-bar "></span>
+			<span class="icon-bar "></span>
         </button>
 	
 
@@ -650,17 +691,13 @@ $( document ).ready(function() {
         <ul class="nav navbar-nav">
            
         </ul>
-        <ul class="nav navbar-nav navbar-right">
-            <li class="dropdown">
-                <a data-toggle="dropdown" class="dropdown-toggle" href="#">Settings <b class="caret"></b></a>
-                <ul role="menu" class="dropdown-menu settings">
-					<li>
-							<li><input value="aa" placeholder="192.168.10.1:5672" type="text" class="form-control" id="addip"></li>
-                    		<li><span id="checkico" class="glyphicon glyphicon-ok glyphicon-xsmall"></span></button></li>
-					</li>
-				</ul>
-            </li>
-        </ul>
+
+            <div class="dropdown rightnav">
+        
+							<input value="aa" placeholder="192.168.0.3" type="text" class="form-control adjustinput" id="addip">
+                    		<span id="checkico" class="glyphicon glyphicon-ok glyphicon-xsmall"></span>
+            </div>
+
     </div>
 	
 	
@@ -722,7 +759,7 @@ $( document ).ready(function() {
 
 <!-- ///////////////////////////////player/////////////////////////////////	 -->
 	<div class="container-fluid" id="container">
-		<img id="imgplayer" class="img-rounded img-responsive" alt="Go to settings Check IP:5672" >
+		<img id="imgplayer" class="img-rounded img-responsive" >
 
 				<div class="square">
 					<div id="albartlabel" class="alert alert-info translucid" role="alert">
