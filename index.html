@@ -84,6 +84,7 @@ function listen ()
 			
 			switch (objmess.channel){
 				case "playlists":
+					localStorage.setItem('playlists', JSON.stringify(objmess.payload));
 					playlist()
 					$("#iconnect").attr("class","glyphicon colmargin iconect glyphicon-music");
 				break;
@@ -127,7 +128,7 @@ function listen ()
 					results()
 				break;
 				case "library":
-					localStorage.setItem('lirary', JSON.stringify(objmess.payload));
+					localStorage.setItem('library', JSON.stringify(objmess.payload));
 					library()
 				break;
 				
@@ -140,28 +141,28 @@ function listen ()
 function playlist()
 {
 	$('#accordion1').empty();
+	var obj = JSON.parse(localStorage.getItem("playlists"));
 	var content = null;
-	for(var i = 0; i < objmess.payload.length; i++) 
+	for(var i = 0; i < obj.length; i++) 
 		{
 		var playlistid = objmess.payload[i].id
-		localStorage.setItem(playlistid, JSON.stringify(objmess.payload[i]));
-		var playlistid = objmess.payload[i].id
-		var playlistname = objmess.payload[i].name
-		var tracks = objmess.payload[i].tracks
+		localStorage.setItem(playlistid, JSON.stringify(obj[i]));
+		var playlistid = obj[i].id
+		var playlistname = obj[i].name
+		var tracks = obj[i].tracks
 		var iplay = '<button type="button" id="'+playlistid+'"  class="btn btn-default myplaybtn btn-sm"><span class="glyphicon glyphicon-white glyphicon-small glyphicon-play"></span></button>'
 		var namep = objmess.payload[i].name.substring(10);
 		var name= namep.slice(0, -1);
 		var content='<div class="panel"><div class="panel-heading paneltitre"><table class="titletab"><tr><td data-toggle="collapse" data-parent="#accordion1" href="#collapse'+i+'" class="icoflechebas"><span class="glyphicon glyphicon-white glyphicon-small glyphicon-circle-arrow-down"></span></td><td data-toggle="collapse" data-parent="#accordion" href="#collapse'+i+'" align="left"><span class="titre">'+name+'</span></td><td width="30px;" align="right">'+iplay+'</td></tr></table></div><div id="collapse'+i+'" class="panel-collapse collapse panel-custom " ><div class="panel-body"><ul class="list-group" id="ul'+i+'"></ul></div></div></div>'
 		$( content ).appendTo( "#accordion1" );
-	
-			for(var j = 0; j < objmess.payload[i].tracks.length; j++)
+			for(var j = 0; j < obj[i].tracks.length; j++)
 				{
-				var id = objmess.payload[i].tracks[j].id
-				localStorage.setItem(id, JSON.stringify(objmess.payload[i].tracks[j]));
-				var title = objmess.payload[i].tracks[j].title
-				var album = objmess.payload[i].tracks[j].album
-				var art = objmess.payload[i].tracks[j].albumArt
-				var artist = objmess.payload[i].tracks[j].artist
+				var id = obj[i].tracks[j].id
+				localStorage.setItem(id, JSON.stringify(obj[i].tracks[j]));
+				var title = obj[i].tracks[j].title
+				var album = obj[i].tracks[j].album
+				var art = obj[i].tracks[j].albumArt
+				var artist = obj[i].tracks[j].artist
 				var chans = '<table class="tabline" ><tr id="'+id+'" class="line myplaytracksearch"><td class="mini"><img class="mini" src="'+art+'"><td class="text">'+objmess.payload[i].tracks[j].artist+',  '+objmess.payload[i].tracks[j].title+'</td><td style="width:30px;" ><span class="glyphicon glyphicon-small glyphicon-play-circle"></span></button></td></tr></table>'
 	
 				$( chans ).appendTo( "#ul"+i );
@@ -217,34 +218,35 @@ function library()
 {
 	$('#libalbums').empty();
 	$('#libsongs').empty();
-	for(var j = 0; j < objmess.payload.albums.length; j++)
+	var obj = JSON.parse(localStorage.getItem("library"));
+	for(var j = 0; j < obj.albums.length; j++)
 				{
-				var id = objmess.payload.albums[j].id
-				localStorage.setItem(id, JSON.stringify(objmess.payload.albums[j]));
-				var name = objmess.payload.albums[j].name
-				var artist = objmess.payload.albums[j].artist
-				var art = objmess.payload.albums[j].albumArt
+				var id = obj.albums[j].id
+				localStorage.setItem(id, JSON.stringify(obj.albums[j]));
+				var name = obj.albums[j].name
+				var artist = obj.albums[j].artist
+				var art = obj.albums[j].albumArt
 				var album = '<table class="tabline"><tr id="'+id+'" class="line myplaytracksearch"><td class="mini"><img class="mini" src="'+art+'"></td><td class="text">'+artist+',    '+name+'</td><td style="width:30px;" ><span class="glyphicon glyphicon-small glyphicon-play-circle"></span></td></tr></table>'
 				
 				$( album ).appendTo( "#libalbums" );
 				}
-	for(var j = 0; j < objmess.payload.artists.length; j++)
+	for(var j = 0; j < obj.artists.length; j++)
 				{
-				localStorage.setItem('artist'+j, JSON.stringify(objmess.payload.artists[j]));
-				var name = objmess.payload.artists[j].name
-				var id = objmess.payload.artists[j].id
-				var artists = '<table class="tabline"><tr id="artist'+j+'"  class="line myplaytracksearch"><td class="text">'+name+'</td></tr></table>'
+				var id = obj.artists[j].id
+				localStorage.setItem(id, JSON.stringify(obj.artists[j]));
+				var name = obj.artists[j].name
+				var artists = '<table class="tabline"><tr id="'+id+'"  class="line myplaytracksearch"><td class="text">'+name+'</td></tr></table>'
 				
 				//$( artists ).appendTo( "#artists" );
 				}
-	for(var j = 0; j < objmess.payload.tracks.length; j++)
+	for(var j = 0; j < obj.tracks.length; j++)
 				{
-				localStorage.setItem('song'+j, JSON.stringify(objmess.payload.tracks[j]));
-				var name = objmess.payload.tracks[j].title
-				var artist = objmess.payload.tracks[j].artist
-				var id = objmess.payload.tracks[j].id 
-				var art = objmess.payload.tracks[j].albumArt
-				var songs = '<table class="tabline"><tr id="song'+j+'"  class="line myplaytracksearch"><td class="mini"><img class="mini" src="'+art+'"></td><td class="text" align="left">'+artist+',    '+name+'</td></td><td style="width:30px;" ><span class="glyphicon glyphicon-small glyphicon-play-circle"></span></td></tr></table>'
+				var id = obj.tracks[j].id 
+				localStorage.setItem(id, JSON.stringify(obj.tracks[j]));
+				var name = obj.tracks[j].title
+				var artist = obj.tracks[j].artist
+				var art = obj.tracks[j].albumArt
+				var songs = '<table class="tabline"><tr id="'+id+'"  class="line myplaytracksearch"><td class="mini"><img class="mini" src="'+art+'"></td><td class="text" align="left">'+artist+',    '+name+'</td></td><td style="width:30px;" ><span class="glyphicon glyphicon-small glyphicon-play-circle"></span></td></tr></table>'
 				
 				$( songs ).appendTo( "#libsongs" );
 				}
@@ -258,16 +260,15 @@ function queuelist()
 {
 	$('#queueul').empty();
 	var obj = JSON.parse(localStorage.getItem("queue"));
-	console.log(obj.length)
 	for(var j = 0; j < obj.length; j++)
 				{
 				var id = obj[j].id
-				localStorage.setItem("song"+j, JSON.stringify(objmess.payload[j]));
+				localStorage.setItem(id, JSON.stringify(objmess.payload[j]));
 				var title = obj[j].title
 				var album = obj[j].album
 				var art = obj[j].albumArt
 				var artist = obj[j].artist
-				var chans = '<table class="tabline"><tr id="song'+j+'" class="line myplaytracksearch"><td class="mini"><img class="mini" src="'+art+'"></td><td class="text">'+artist+',  '+title+'</td><td style="width:30px;" ><span class="glyphicon glyphicon-small glyphicon-play-circle"></span></td></tr></table>'
+				var chans = '<table class="tabline"><tr id="'+id+'" class="line myplaytracksearch"><td class="mini"><img class="mini" src="'+art+'"></td><td class="text">'+artist+',  '+title+'</td><td style="width:30px;" ><span class="glyphicon glyphicon-small glyphicon-play-circle"></span></td></tr></table>'
 	 
 				$( chans ).appendTo( "#queueul" );
 				}
@@ -311,7 +312,7 @@ function play(list)
 		}));
 		setTimeout(function(){
 			playpause()
-		}, 2000);
+		}, 2000);		
 }
 function playt(mysong)
 {
@@ -694,7 +695,7 @@ $( document ).ready(function() {
 
             <div class="dropdown rightnav">
         
-							<input value="aa" placeholder="192.168.0.3" type="text" class="form-control adjustinput" id="addip">
+							<input value="aa" placeholder="192.168.0.3" type="text" class="form-control" id="addip">
                     		<span id="checkico" class="glyphicon glyphicon-ok glyphicon-xsmall"></span>
             </div>
 
