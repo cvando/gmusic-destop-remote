@@ -166,8 +166,8 @@ overflow: auto;
 	margin-right:3px;
 }
 
-tr:hover, tr:active{
-	box-shadow:inset 0 0 40px orange;
+ tr:active{
+	background-color:black;
 }
 .btn-info:hover,.btn-default:hover,.btn-default:active:focus,.btn-default:focus,.btn-info:active,.btn-info.active,.btn-info:active:focus, .btn-default.active:focus {
 	border-style:none;

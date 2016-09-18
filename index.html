@@ -291,6 +291,13 @@ function getObjects(obj, key, val) {
 
 
 function track(mytrack,trackname,trackinfo){
+		if (trackname == null)
+		{
+		trackname = "connected"
+		trackinfo = "Play a track"
+		mytrack = "iconmusic.png"
+		}	
+		
 		$("#imgplayer").attr("src",mytrack);
 		$("#tracklabel").html(trackname);
 		$("#albartlabel").html(trackinfo);
@@ -552,6 +559,7 @@ $( document ).ready(function() {
 	});
 	$('body').on('click','.myplaytracksearch', function(){
 	var recup = $(this).attr('id');
+	$(this).toggleClass("active");
 	playresult(recup)
 	//myplay2(recup)
 	});
