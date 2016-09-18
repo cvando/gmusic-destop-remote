@@ -16,7 +16,7 @@ https://github.com/MarshallOfSound/Google-Play-Music-Desktop-Player-UNOFFICIAL- 
 https://www.googleplaymusicdesktopplayer.com/<br>
 <br>
 Download the app on the playstore:<br>
-dsqddsdqsdsq
+https://play.google.com/store/apps/details?id=tk.cvando.gmusic_desktop_remote
 </p>
 <br>
 <br>
