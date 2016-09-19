@@ -8,6 +8,7 @@
 <script src="js/jquery.min.js"></script>
 <script src="styles/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
 <script src="js/hammer.js"></script>
+<script src="styles/rangeslider.js-2.2.1/rangeslider.js"></script>
 <link rel="stylesheet" href="styles/styleboot.css" />
 <meta name="mobile-web-app-capable" content="yes">
 <script>
@@ -129,7 +130,9 @@ function listen ()
 				break;
 				case "library":
 					localStorage.setItem('library', JSON.stringify(objmess.payload));
+					console.log("ok")
 					library()
+					
 				break;
 				
 			}
@@ -214,7 +217,7 @@ function results()
 
 
 
-function library()
+function library1()
 {
 	$('#libalbums').empty();
 	$('#libsongs').empty();
@@ -226,7 +229,7 @@ function library()
 				var name = obj.albums[j].name
 				var artist = obj.albums[j].artist
 				var art = obj.albums[j].albumArt
-				var album = '<table class="tabline"><tr id="'+id+'" class="line myplaytracksearch"><td class="mini"><img class="mini" src="'+art+'"></td><td class="text">'+artist+',    '+name+'</td><td style="width:30px;" ><span class="glyphicon glyphicon-small glyphicon-play-circle"></span></td></tr></table>'
+				var album = '<table class="tabline"><tr id="'+id+'" class="line myplaytracklib"><td data-toggle="collapse" data-parent="#accordion10" href="#collapse'+j+'" class="icoflechebas"><td class="mini"><img class="mini" src="'+art+'"></td><td class="text">'+artist+',    '+name+'</td><td style="width:30px;" ><span class="glyphicon glyphicon-small glyphicon-play-circle"></span></td></tr></table>'
 				
 				$( album ).appendTo( "#libalbums" );
 				}
@@ -246,13 +249,37 @@ function library()
 				var name = obj.tracks[j].title
 				var artist = obj.tracks[j].artist
 				var art = obj.tracks[j].albumArt
-				var songs = '<table class="tabline"><tr id="'+id+'"  class="line myplaytracksearch"><td class="mini"><img class="mini" src="'+art+'"></td><td class="text" align="left">'+artist+',    '+name+'</td></td><td style="width:30px;" ><span class="glyphicon glyphicon-small glyphicon-play-circle"></span></td></tr></table>'
+				var songs = '<table class="tabline"><tr id="'+id+'"  class="line myplaytracklib"><td class="mini"><img class="mini" src="'+art+'"></td><td class="text" align="left">'+artist+',    '+name+'</td></td><td style="width:30px;" ><span class="glyphicon glyphicon-small glyphicon-play-circle"></span></td></tr></table>'
 				
 				$( songs ).appendTo( "#libsongs" );
 				}
-
-
-
+}
+function library()
+{
+	console.log("ok")
+	$('#accordion10').empty();
+	var obj = JSON.parse(localStorage.getItem("library"));
+	for(var j = 0; j < obj.albums.length; j++) 
+		{
+		var id = obj.albums[j].id
+		localStorage.setItem(id, JSON.stringify(obj.albums[j]));
+		var name = obj.albums[j].name
+		var artist = obj.albums[j].artist
+		var art = obj.albums[j].albumArt
+		var content='<div class="panel"><div class="panel-heading paneltitre"><table class="titletab"><tr><td data-toggle="collapse" data-parent="#accordion10" href="#collapse1'+j+'" class="icoflechebas"><img class="mini" src="'+art+'"></td><td data-toggle="collapse" data-parent="#accordion10" href="#collapse1'+j+'" align="left"><span class="titre">'+artist+' , '+name+'</span></td></td></tr></table></div><div id="collapse1'+j+'" class="panel-collapse collapse panel-custom " ><div class="panel-body"><ul class="list-group" id="ul1'+j+'"></ul></div></div></div>'
+		$( content ).appendTo( "#accordion10" );
+			
+		for(var i = 0; i < obj.albums[j].tracks.length; i++)
+			{
+			var id = obj.albums[j].tracks[i].id
+			localStorage.setItem(id, JSON.stringify(obj.albums[j].tracks[i]));
+			var title = obj.albums[j].tracks[i].title
+			var art = obj.albums[j].tracks[i].albumArt
+			var chans = '<table class="tabline" ><tr id="'+id+'" class="line myplaytracklib"><td class="mini"><img class="mini" src="'+art+'"><td class="text">'+title+'</td><td style="width:30px;" ><span class="glyphicon glyphicon-small glyphicon-play-circle"></span></button></td></tr></table>'
+			$( chans ).appendTo( "#ul1"+j );
+			
+			}
+		}	
 }
 
 
@@ -330,6 +357,15 @@ function playt(mysong)
 			searchplay(toplay)
 		}, 2000);
 }
+function playliststrack(list, track)
+{
+		var obj = JSON.parse(localStorage.getItem(list));
+		var obj = JSON.parse(localStorage.getItem(track));
+		toplay = supobj[0]
+		setTimeout(function(){
+			playlt(list,track)
+		}, 2000);
+}
 
 function playresult(result){
 		var obj1 = JSON.parse(localStorage.getItem(result));
@@ -339,12 +375,20 @@ function playresult(result){
 		}, 2000);
 
 }
+function playlib(result){
+		var obj1 = JSON.parse(localStorage.getItem(result));
+		console.log(obj1)
+		setTimeout(function(){
+			libplay(obj1)
+		}, 2000);
+
+}
 
 function myplay2(result){
 		var obj = JSON.parse(localStorage.getItem("queue"));
 		console.log(obj[result])
 		setTimeout(function(){
-			playTrack(obj[result])
+			libplay(obj[result])
 		}, 2000);
 
 }
@@ -394,6 +438,20 @@ function toggleShuffle()
 				"method": "toggleShuffle"
 				}));
 }
+function involume()
+{
+		ws.send(JSON.stringify({
+				"namespace": "volume",
+				"method": "increaseVolume"
+				}));
+}
+function devolume()
+{
+		ws.send(JSON.stringify({
+				"namespace": "volume",
+				"method": "decreaseVolume"
+				}));
+}
 function shufflemode()
 {
 		ws.send(JSON.stringify({
@@ -426,6 +484,22 @@ function searchplay(track)
 				"namespace": "search",
 				"method": "playResult",
 				"arguments" : [track]
+				}));
+}
+function libplay(track)
+{
+ 		ws.send(JSON.stringify({
+				"namespace": "library",
+				"method": "playTrack",
+				"arguments" : [track]
+				}));
+}
+function playlt(playlist, track)
+{
+ 		ws.send(JSON.stringify({
+				"namespace": "playlists",
+				"method": "playWithTrack",
+				"arguments" : [playlist, track]
 				}));
 }
 
@@ -480,19 +554,30 @@ function resizeimg()
   		{
   			
   		}
+}
+function detectab()
+{
+var conwidth= $('#container').width();
+if (conwidth > 500)
+	{
+	$( "#resleft" ).addClass( "resleft" );
+	$( "#resright" ).addClass( "resright" );
+	}
+}
   		
   
-}
+
 
 $( document ).ready(function() {
 	connect()
-	var conheight= $('#container').height();
-	var resized = conheight - 200;
+	var conheight= $('#container').height();		
+	var resized = conheight - 205;
 	var resuresized = conheight - 153;
 	$( "#results" ).hide();
 	$( "#menu" ).hide();
 	$( "#library" ).hide();
 	$( "#queue" ).hide();
+	$( "#volume" ).hide();
 	
 	$('body').on('click','#checkico', function(){
 	ip = $('#addip').val();
@@ -515,9 +600,12 @@ $( document ).ready(function() {
 				$( "#results" ).show();
 				$("#imgplayer").css("-webkit-filter", "brightness(50%)");
 				$("#results").css("height", resuresized);
+				detectab()
 				var libsize = resuresized - 50
-				$(".sublibrary").css("height", libsize );
 				var navheight= $('#nav').height();
+				$(".resleft").css("height", libsize);
+				$(".resright").css("height", libsize);
+				$(".sublibrary").css("height", libsize );
 				$("#results").css("top", navheight);
 				$("#results").css("animation",  "rleft 1s forwards");
 	$("#searchin").val("");
@@ -530,8 +618,10 @@ $( document ).ready(function() {
 			search(mysearch)
 			$("#searchin").val("");
 				$("#imgplayer").css("-webkit-filter", "brightness(50%)");
-				$( "#results" ).show();
+				$( "#results" ).show();detectab()
 				$("#results").css("height", resuresized);
+				$(".resleft").css("height", libsize);
+				$(".resright").css("height", libsize);
 				var navheight= $('#nav').height();
 				var libsize = resuresized - 50
 				$(".sublibrary").css("height", libsize );
@@ -559,9 +649,16 @@ $( document ).ready(function() {
 	});
 	$('body').on('click','.myplaytracksearch', function(){
 	var recup = $(this).attr('id');
-	$(this).toggleClass("active");
 	playresult(recup)
 	//myplay2(recup)
+	});
+	$('body').on('click','.myplaytracklib', function(){
+	var recup = $(this).attr('id');
+	playlib(recup)
+	//myplay2(recup)
+	});
+	$('body').on('click','.myplaylistrack', function(){
+    forward()
 	});
 	
 	
@@ -587,24 +684,40 @@ $( document ).ready(function() {
 	$('body').on('click','.glyphicon-random', function(){
 	toggleShuffle()
 	});
-	$('body').on('click','.glyphicon-volume-off', function(){
-	currenttrack()
+	$('body').on('click','.glyphicon-volume-up', function(){
+	involume();
 	});
+	$('body').on('click','.glyphicon-volume-down', function(){
+	devolume();
+	});
+	
 	$('body').on('click','#icoplaylists', function(){
-	$("#menu").css("display", block);
-	$("#menu").animate({left: '0px'});
+		$("#menu").css("display", block);
+		$("#accordion1").css("height", resized);
+		$("#menu").animate({left: '0px'});
 	});
+	
 	$('body').on('click','#dispresults', function(){
 		$( "#library" ).show();
-		$("#imgplayer").css("-webkit-filter", "brightness(50%)");
-		$("#library").css("height", resuresized);
 		var libsize = resuresized - 50
-		$(".sublibrary").css("height", libsize );
+		$("#sublibrary").css("height", libsize );
+		$("#imgplayer").css("-webkit-filter", "brightness(50%)");
+		$("#accordion10").css("height", resized);
+		//$("#library").css("height", resuresized);
 		var navheight= $('#nav').height();
 		$("#library").css("top", navheight);
 		$("#library").css("animation",  "rleft 1s forwards");
 
 	});
+	
+	
+///////slider//////////////////////////////////////
+var $element = $('input[type="range"]');
+   $element.on('input', function() {
+		volume(this.value)
+		
+	  });
+
 	
 /////////////hammer/////////////////////////////////	
 	
@@ -731,21 +844,21 @@ $( document ).ready(function() {
 <!-- ///////search//////////////// -->	
 	<div id="results" >
 		<h1 class="titre">Results</h1>
-		<div class="sublibrary"> 
-			<div>
+		<div id="sublibrary" class="sublibrary"> 
+			<div id="resleft">
 				<h1 class="titre">Albums</h1>
 				<ul id="albums" class="result">
 				</ul>
 			</div>
-			<div>
-				<h1 class="titre">Songs</h1>
+			<div id="resright">
+				<h1 class="titre">Tracks</h1>
 				<ul id="songs" class="result">
 				</ul>
 			</div>
 		</div>
 	</div>
 <!-- //////library/////////////////////	 -->
-	<div id="library" >
+	<!-- <div id="library" >
 		<h1 class="titre">My library</h1>
 		<div class="sublibrary">
 			<div>
@@ -759,8 +872,19 @@ $( document ).ready(function() {
 				</ul>
 			</div>
 		</div>
+	</div> -->
+	<div id="library" >
+		<h1 class="titre">My Library</h1>
+		<div class="panel-group" id="accordion10"> 
+		</div>
 	</div>
 	
+	
+	
+<!-- slider -->
+	<div id = "volume">
+		<input type="range" min="0"   max="100" step="5"   value="100"  data-orientation="vertical">
+	</div>
 	
 </nav>
 
@@ -769,7 +893,7 @@ $( document ).ready(function() {
 <!-- ///////////////////////////////player/////////////////////////////////	 -->
 	<div class="container-fluid" id="container">
 		<img id="imgplayer" class="img-rounded img-responsive" >
-
+	
 				<div class="square">
 					<div id="albartlabel" class="alert alert-info translucid" role="alert">
 					</div>
@@ -782,11 +906,10 @@ $( document ).ready(function() {
 				</div>
 		 
 	</div>
-	
 	<div class="text-center list-button overlayplay">
 				<div class="list-group  list-group-horizontal">
 				<button type="button" class="btn btn-info btn-sm">
-					<span class="glyphicon colmargin glyphicon-large glyphicon-random"></span>
+					<span class="glyphicon colmargin glyphicon-large glyphicon-volume-down"></span>
 				</button>
 				<button type="button" class="btn btn-info btn-sm">
 					<span class="glyphicon colmargin glyphicon-large glyphicon-fast-backward"></span>
@@ -798,13 +921,17 @@ $( document ).ready(function() {
 					<span class="glyphicon colmargin glyphicon-large glyphicon-fast-forward"></span>
 				</button>
 				<button type="button" class="btn btn-info btn-sm">
-					<span class="glyphicon colmargin glyphicon-large glyphicon-volume-off"></span>
-				</button>					
+					<span class="glyphicon colmargin glyphicon-large glyphicon-random"></span>
+				</button>
+				<button type="button" class="btn btn-info btn-sm ">
+					<span class="glyphicon colmargin glyphicon-large glyphicon-volume-up"></span>	
+				</button>
 				</div>				
 	
 	
 	</div>
 
+	
 
 
 </body>

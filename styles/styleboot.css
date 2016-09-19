@@ -5,7 +5,7 @@ body{
 	color:white;
 }
 .glyphicon-large{
-	font-size: 45px;
+	font-size: 41px;
 }
 .glyphicon-small{
 	font-size: 35px;
@@ -162,12 +162,16 @@ overflow: auto;
 	background: none; 
 	border-style:none;
 	margin-top:5px;
-	margin-left:3px;
-	margin-right:3px;
+	margin-left:0px;
+	margin-right:0px;
+	width:14%;
+	padding:5px;
+	text-align:center;
 }
 
  tr:active{
 	background-color:black;
+
 }
 .btn-info:hover,.btn-default:hover,.btn-default:active:focus,.btn-default:focus,.btn-info:active,.btn-info.active,.btn-info:active:focus, .btn-default.active:focus {
 	border-style:none;
@@ -301,6 +305,10 @@ overflow: auto;
 	height:200px;
 	padding-bottom:50px;
 }
+#accordion10{
+	height:200px;
+	padding-bottom:50px;
+}
 #accordion2{
 	padding-bottom:50px;
 }
@@ -379,7 +387,7 @@ overflow: auto;
 	position:absolute;
   	width:100%;          
 	left:-100%;
-	z-index:2;
+	z-index:7;
 }
 .mini{
 	height:60px;
@@ -417,4 +425,24 @@ overflow: auto;
 }
 .enabled{
 	text-shadow: 5px 5px 1px black;
+}
+#volume{
+	width:80%;
+	position:fixed;
+	right:0px;
+	bottom:100px;
+	width: 150px;
+	z-index:2;
+}
+.resleft{
+	position:absolute;
+	left:0px;
+	width: 48%;
+	overflow-y:auto;
+}
+.resright{
+	position:absolute;
+	right:0px;
+	width: 48%;
+	overflow-y:auto;
 }
