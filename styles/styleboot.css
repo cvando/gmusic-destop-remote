@@ -77,7 +77,7 @@ body{
 }
 .overlayplay {
 	background-color: #FF5722;
-	height: 80px;
+	height: 76px;
 	width:100%;
     z-index: 1000;
     position: fixed;
