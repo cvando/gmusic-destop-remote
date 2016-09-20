@@ -7,7 +7,7 @@
   <h1>Description</H1>
   
 <p>Google Play Music Desktop Player is needed to receive commands from this Remote Control App. <br>
-The Remote Control apps allow you to remotely control Google Play Music Desktop Player from your android tablet and smartphone. You can download the latest version on the playstore </p>
+The Remote Control app allows you to remotely control Google Play Music Desktop Player from your android tablet and smartphone. You can download the latest version on the playstore </p>
 
 <p> This application is based on the APIs from this git:<br>
 https://github.com/MarshallOfSound/Google-Play-Music-Desktop-Player-UNOFFICIAL- </p>
