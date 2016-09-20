@@ -26,7 +26,14 @@ body{
 	color:white;
 }
 
-
+.btnlyrics{
+	position:fixed;
+	left:10px;
+	top:65px;
+	font-size:18px;
+	color:white;
+	z-index:2
+}
 
 
 /* //////////////navbar/////////////////// */

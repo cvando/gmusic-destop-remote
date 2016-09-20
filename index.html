@@ -603,11 +603,10 @@ $( document ).ready(function() {
 				detectab()
 				var libsize = resuresized - 50
 				var navheight= $('#nav').height();
-				$(".resleft").css("height", libsize);
-				$(".resright").css("height", libsize);
-				$(".sublibrary").css("height", libsize );
 				$("#results").css("top", navheight);
 				$("#results").css("animation",  "rleft 1s forwards");
+				$(".resleft").css("height", libsize);
+				$(".resright").css("height", libsize);
 	$("#searchin").val("");
 	});
 	
@@ -620,13 +619,12 @@ $( document ).ready(function() {
 				$("#imgplayer").css("-webkit-filter", "brightness(50%)");
 				$( "#results" ).show();detectab()
 				$("#results").css("height", resuresized);
-				$(".resleft").css("height", libsize);
-				$(".resright").css("height", libsize);
 				var navheight= $('#nav').height();
 				var libsize = resuresized - 50
-				$(".sublibrary").css("height", libsize );
 				$("#results").css("top", navheight);
 				$("#results").css("animation",  "rleft 1s forwards");
+				$(".resleft").css("height", libsize);
+				$(".resright").css("height", libsize);
 			return false;
          }
    });
@@ -892,6 +890,11 @@ var $element = $('input[type="range"]');
 
 <!-- ///////////////////////////////player/////////////////////////////////	 -->
 	<div class="container-fluid" id="container">
+
+          <span class="glyphicon glyphicon-list-alt glyphicon-large btnlyrics">.Lyrics</span> <p>List-alt</p>
+		  <div id="lyrics">
+		  </div>
+
 		<img id="imgplayer" class="img-rounded img-responsive" >
 	
 				<div class="square">
