@@ -32,7 +32,6 @@ body{
 	top:65px;
 	font-size:18px;
 	color:white;
-	z-index:2
 }
 
 
@@ -417,6 +416,16 @@ overflow: auto;
 	width:100%;
 	right:-100%;
 	z-index:6;
+}
+#lyrics{
+	position:absolute;
+	width:100%;
+	white-space: pre-wrap;
+	font-size:20px;
+	text-align: center;
+	color: white;
+	z-index:5;
+	overflow-y:auto;
 }
 .sublibrary{
 	overflow-y:auto!important;
