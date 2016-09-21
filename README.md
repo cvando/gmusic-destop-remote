@@ -56,7 +56,7 @@ https://play.google.com/store/apps/details?id=tk.cvando.gmusic_desktop_remote
   <li>Play from the result screen</li>
   <li>Select and play song from the queue</li>
   <li>Select and play a playlist from the playlists screen</li>
-  <li>When the playlist is playing, play a song from the playlists screen</li>
-  <li>Show your library from the icon on top (play from it soon)</li>
+  <li>Play a song from the playlists screen (you have to play the playslist first</li>
+  <li>Show your library and play your tracks</li>
   <li>Display lyrics</li>
   </ul>
