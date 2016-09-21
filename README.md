@@ -2,6 +2,7 @@
 
   <img src="screenshots/normtab.jpg" height="350"/>
   <img src="screenshots/search.jpg" height="350"/>
+  <img src="screenshots/lyrics.jpg" height="350"/>
   
   
   <h1>Description</H1>
@@ -57,4 +58,5 @@ https://play.google.com/store/apps/details?id=tk.cvando.gmusic_desktop_remote
   <li>Select and play a playlist from the playlists screen</li>
   <li>When the playlist is playing, play a song from the playlists screen</li>
   <li>Show your library from the icon on top (play from it soon)</li>
+  <li>Display lyrics</li>
   </ul>
