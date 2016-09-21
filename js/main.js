@@ -253,12 +253,15 @@ $( document ).ready(function() {
 			detectab()
 			hidediv()
 			$( "#results" ).show();
-			heightdiv()
+			setTimeout(function(){
+				heightdiv()
+				$("#sublibrary").css("height", libsize);
+				$(".resleft").css("height", libsize);
+				$(".resright").css("height", libsize);
+				$("#results").css("top", navheight);
+				}, 500);
+			
 			lumout()
-			$("#sublibrary").css("height", libsize);
-			$(".resleft").css("height", libsize);
-			$(".resright").css("height", libsize);
-			$("#results").css("top", navheight);
 			$("#results").css("animation",  "rleft 1s forwards");
 			$("#searchin").val("");
 			return false;
