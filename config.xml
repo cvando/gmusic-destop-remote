@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<plugin name="com.ququplay.websocket.websocket" spec="0.1.0" source="pgb" />
+
 <widget xmlns   = "http://www.w3.org/ns/widgets"
     xmlns:gap   = "http://phonegap.com/ns/1.0"
     id          = "tk.cvando.gmusic-desktop-remote"
@@ -19,4 +19,5 @@
       Clement Vandoolaeghe
   </author>
 
+  <plugin name="com.ququplay.websocket.websocket" spec="0.1.0" source="pgb" />
 </widget>
