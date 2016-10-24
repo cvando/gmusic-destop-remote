@@ -19,5 +19,5 @@
       Clement Vandoolaeghe
   </author>
 
-  <plugin name="com.ququplay.websocket.websocket" spec="0.1.0" source="pgb" />
+  <plugin name="cordova-plugin-websocket" spec="0.12.0" source="npm" />
 </widget>
