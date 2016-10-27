@@ -20,10 +20,8 @@
   </author>
   <plugin name="cordova-plugin-whitelist" spec="~1.3.0" />
   <plugin name="cordova-plugin-websocket" spec="0.12.0" source="npm"/>
-    <allow-intent href="http://*/*" />
-    <allow-intent href="https://*/*" />
-    <access origin="https://lh3.*" />
-    <access origin="https://lh4.*" />
     <allow-navigation href="*" />
+    <allow-intent href="*" />
+    <access origin="*" />
     
 </widget>
