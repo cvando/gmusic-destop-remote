@@ -177,7 +177,7 @@ overflow: auto;
 }
 
  tr:active{
-	background-color:black;
+	background-color:rgba(255,255,255,0.8);
 
 }
 .btn-info:hover,.btn-default:hover,.btn-default:active:focus,.btn-default:focus,.btn-info:active,.btn-info.active,.btn-info:active:focus, .btn-default.active:focus {

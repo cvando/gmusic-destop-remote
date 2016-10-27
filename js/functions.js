@@ -45,7 +45,7 @@ function results()
 				var name = objmess.payload.albums[j].name
 				var artist = objmess.payload.albums[j].artist
 				var artv2 = objmess.payload.albums[j].albumArt
-				var art = artv2.slice(0, -3);
+				var art = artv2.slice(0, -7);
 				var album = '<table class="tabline"><tr id="'+id+'" class="line myplaytracksearch"><td class="mini"><img class="mini" src="'+art+'"></td><td class="text">'+artist+',    '+name+'</td><td style="width:30px;" ><button type="button" id="'+id+'" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-small glyphicon-play-circle"></span></button></td></tr></table>'
 				
 				$( album ).appendTo( "#albums" );
