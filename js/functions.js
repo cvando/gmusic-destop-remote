@@ -348,15 +348,6 @@ function iconplay(state)
 	$("#ppicon").attr("class","glyphicon glyphicon-large colmargin glyphicon-pause")
 	}
 }
-function connects()
-{
-	$("#checkico").attr("class","glyphicon glyphicon-xsmall glyphicon-ok glyphicon-green")
-}
-function connectf()
-{
-	$("#checkico").attr("class","glyphicon glyphicon-xsmall glyphicon-ok glyphicon-red")
-}
-
 
 
 function playback()

@@ -21,7 +21,6 @@ function connect(ipport)
 ////////////////////login/////////////////////
 function login(code)
 {
-	connectf()	
 	ws.onopen = function()
 		{
 			ws.send(JSON.stringify({
@@ -47,7 +46,6 @@ function listen ()
 {
 		ws.onmessage = function (evt)
 			{
-			connects()
 			objmess = JSON.parse(evt.data);
 			
 			if(objmess.payload=="CODE_REQUIRED")
@@ -146,7 +144,6 @@ $( document ).ready(function() {
 	ip = $('#addip').val();
 	ws.close()
 	$("input").blur();
-	$( "#navbarCollapse" ).toggleClass( "collapse" )
 	localStorage.setItem("ip", ip)
 	connect(ip)
 	});
@@ -272,7 +269,7 @@ $( document ).ready(function() {
          if(e.which === 13){
 			$("input").blur();
 			ip = $('#addip').val();
-			$( "#navbarCollapse" ).toggleClass( "collapse" )
+			$('#myModal').modal('hide');
 			ws.close()
 			localStorage.setItem("ip", ip)
 			connect(ip)
