@@ -20,4 +20,6 @@
   </author>
   <plugin name="cordova-plugin-whitelist" spec="~1.3.0" />
   <plugin name="cordova-plugin-websocket" spec="0.12.0" source="npm"/>
+  <access origin="*" />
+    
 </widget>
