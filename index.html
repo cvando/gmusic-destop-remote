@@ -38,24 +38,24 @@
 <!-- ///////////playlist////////// -->
 	<div id="menu" >
 		<h1 class="titre">Playlists</h1>
-		<div class="panel-group" id="accordion1"> 
+		<div class="panel-group" id="accordion1">
 		</div>
 	</div>
 
-<!-- ///////queue//////////////// -->	
+<!-- ///////queue//////////////// -->
 	<div id="queue" >
 		<h1 class="titre">Queue</h1>
-		<div class="panel-group" id="accordion2"> 
+		<div class="panel-group" id="accordion2">
 		<ul class="uscust" id="queueul">
 		</ul>
 		</div>
 	</div>
 	
 
-<!-- ///////search//////////////// -->	
+<!-- ///////search//////////////// -->
 	<div id="results" >
 		<h1 class="titre">Results</h1>
-		<div id="sublibrary" class="sublibrary"> 
+		<div id="sublibrary" class="sublibrary">
 			<div id="resleft">
 				<h1 class="titre">Albums</h1>
 				<ul id="albums" class="result">
@@ -73,7 +73,7 @@
 
 	<div id="library" >
 		<h1 class="titre">My Library</h1>
-		<div class="panel-group" id="accordion10"> 
+		<div class="panel-group" id="accordion10">
 		</div>
 	</div>
 	
@@ -85,7 +85,7 @@
 	</div>
 	
 </nav>
-
+<!-- ////////////modals////////////////////////////////// -->
 	<div id="myModal" class="modal fade" role="dialog">
 		  <div class="modal-dialog">
 				<div class="modal-content">
@@ -101,16 +101,34 @@
 				  </div>
 			</div>
 		  </div>
+	</div>
+		
+		
+	<div id="myModalerror" class="modal fade" role="dialog">
+		<div class="modal-dialog">
+				<div class="modal-content">
+				  <div class="modal-header">
+					<button type="button" id="moderror" class="close" data-toggle="modal" data-target="#myModalerror">&times;</button>
+					<h4 class="modal-title">GPMDP Remote configuration</h4>
+				  </div>
+				  <div class="modal-body">
+					<p>Error GPMDP unreachable</p>
+				  </div>
+			</div>
 		</div>
+	</div>
 
 <!-- ///////////////////////////////player/////////////////////////////////	 -->
 	<div class="container-fluid" id="container">
 
-          <span id="btnlyrics" class="glyphicon glyphicon-list-alt glyphicon-large btnlyrics">.Lyrics</span>
+		<button id="btnlyrics" type="button" class="btn btn-info btn-sm btnlyrics">Lyrics </button>
 		  <p id="lyrics">
+		    
 		  </p>
-
-		<img id="imgplayer" class="img-rounded img-responsive" >
+    <div class="cropper">
+      <img id="imgplayer">
+    </div>
+	
 	
 				<div class="square">
 					<div id="albartlabel" class="alert alert-info translucid" role="alert">
@@ -120,7 +138,7 @@
 					<div class="progress">
 						<div class="progress-bar progress-bar-warning" id="superbar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="0" style="width: 0%">
 						</div>
-					</div>	
+					</div>
 				</div>
 		 
 	</div>
@@ -142,9 +160,9 @@
 					<span class="glyphicon colmargin glyphicon-large glyphicon-random"></span>
 				</button>
 				<button type="button" class="btn btn-info btn-sm ">
-					<span class="glyphicon colmargin glyphicon-large glyphicon-volume-up"></span>	
+					<span class="glyphicon colmargin glyphicon-large glyphicon-volume-up"></span>
 				</button>
-				</div>				
+				</div>
 	
 	
 	</div>
