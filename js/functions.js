@@ -6,7 +6,7 @@ function playlist()
 	$('#accordion1').empty();
 	var obj = JSON.parse(localStorage.getItem("playlists"));
 	var content = null;
-	for(var i = 0; i < obj.length; i++) 
+	for(var i = 0; i < obj.length; i++)
 		{
 		var playlistid = objmess.payload[i].id
 		localStorage.setItem(playlistid, JSON.stringify(obj[i]));
@@ -30,7 +30,7 @@ function playlist()
 	
 				$( chans ).appendTo( "#ul"+i );
 				}
-		}	
+		}
 }
 
 function results()
@@ -64,7 +64,7 @@ function results()
 				var id = objmess.payload.tracks[j].id
 				localStorage.setItem(id, JSON.stringify(objmess.payload.tracks[j]));
 				var name = objmess.payload.tracks[j].title
-				var artist = objmess.payload.tracks[j].artist 
+				var artist = objmess.payload.tracks[j].artist
 				var art = objmess.payload.tracks[j].albumArt
 				var songs = '<table class="tabline"><tr id="'+id+'"  class="line myplaytracksearch"><td class="mini"><img class="mini" src="'+art+'"></td><td class="text" align="left">'+artist+',    '+name+'</td></td><td style="width:30px;" ><span class="glyphicon glyphicon-small glyphicon-play-circle"></span></button></td></tr></table>'
 				
@@ -86,14 +86,14 @@ function lyrics()
 	}
 	else
 	{
-		$( "#lyrics" ).html( "No lyrics" );	
+		$( "#lyrics" ).html( "No lyrics" );
 	}
 }
 function library()
 {
 	$('#accordion10').empty();
 	var obj = JSON.parse(localStorage.getItem("library"));
-	for(var j = 0; j < obj.albums.length; j++) 
+	for(var j = 0; j < obj.albums.length; j++)
 		{
 		var id = obj.albums[j].id
 		localStorage.setItem(id, JSON.stringify(obj.albums[j]));
@@ -113,7 +113,7 @@ function library()
 			$( chans ).appendTo( "#ul1"+j );
 			
 			}
-		}	
+		}
 }
 
 
@@ -157,7 +157,7 @@ function track(mytrack,trackname,trackinfo){
 		trackname = "connected"
 		trackinfo = "Play a track"
 		mytrack = "iconmusic.png"
-		}	
+		}
 		
 		$("#imgplayer").attr("src",mytrack);
 		$("#tracklabel").html(trackname);
@@ -180,12 +180,12 @@ function play(list)
 		}));
 		setTimeout(function(){
 			playpause()
-		}, 2000);		
+		}, 2000);
 }
 function playt(mysong)
 {
 		var obj1 = JSON.parse(localStorage.getItem("queue"));
-		var supobj= getObjects(obj1, 'id', mysong) 
+		var supobj= getObjects(obj1, 'id', mysong)
 		toplay = supobj[0]
 		setTimeout(function(){
 			searchplay(toplay)
@@ -197,7 +197,7 @@ function playliststrack(list, track)
 		var obj = JSON.parse(localStorage.getItem(track));
 		toplay = supobj[0]
 		setTimeout(function(){
-			playlt(list,track)
+			playlt(re,res)
 		}, 2000);
 }
 
@@ -239,7 +239,7 @@ function forward()
  		ws.send(JSON.stringify({
 				"namespace": "playback",
 				"method": "forward"
-				}));				
+				}));
 }
 function backward()
 {
@@ -371,9 +371,9 @@ function resizeimg()
 {
   var hcont = $("#container").height();
   var screenImage = $("#imgplayer");
-  var theImage = new Image(); 
-  theImage.src = screenImage.attr("src"); 
-  var imageWidth = theImage.width; 
+  var theImage = new Image();
+  theImage.src = screenImage.attr("src");
+  var imageWidth = theImage.width;
   var imageHeight = theImage.height;
   if (hcont < 700 )
   		{
@@ -388,7 +388,7 @@ if (conwidth > 500)
 	$( "#resleft" ).addClass( "resleft" );
 	$( "#resright" ).addClass( "resright" );
 	}
-else 
+else
 	{
 	$( "#resleft" ).removeClass( "resleft" );
 	$( "#resright" ).removeClass( "resright" );
@@ -406,10 +406,10 @@ function hidediv()
 function heightdiv()
 {
 	navheight= $('#nav').height();
-	conheight= $('#container').height();		
+	conheight= $('#container').height();
 	resized = conheight - 205;
 	resuresized = conheight - 153;
-	libsize = resuresized - 50	
+	libsize = resuresized - 50
 }
 function lumin()
 {

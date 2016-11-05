@@ -185,6 +185,10 @@ $( document ).ready(function() {
 	var recup = $(this).attr('id');
 	playresult(recup)
 	});
+	$('body').on('click','.myplayandtrack', function(){
+	var recup = $(this).attr('id');
+	playresult(recup)
+	});
 	$('body').on('click','.myplaytracklib', function(){
 	var recup = $(this).attr('id');
 	playlib(recup)
